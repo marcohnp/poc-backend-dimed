@@ -9,7 +9,7 @@ import java.util.Collection;
 public interface ItinerarioRepository {
 
     Collection<Itinerario> findAll();
-    void save(Itinerario itinerario);
     void delete(Itinerario itinerario) throws DataAccessException;
     Itinerario findById(Long id);
+    Itinerario save(Itinerario itinerario);
 }

@@ -32,8 +32,8 @@ public class ItinerarioServiceImpl implements ItinerarioService {
     }
 
     @Override
-    public void save(Itinerario itinerario) {
-        itinerarioRepository.save(itinerario);
+    public Itinerario save(Itinerario itinerario) {
+       return itinerarioRepository.save(itinerario);
     }
 
     @Override

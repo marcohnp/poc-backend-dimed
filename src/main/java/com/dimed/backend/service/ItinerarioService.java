@@ -10,7 +10,7 @@ import java.util.Collection;
 public interface ItinerarioService {
 
     Collection<Itinerario> findAll();
-    void save(Itinerario itinerario);
+    Itinerario save(Itinerario itinerario);
     void delete(Itinerario itinerario) throws DataAccessException;
     Itinerario findById(Long id);
     Itinerario findItinerario(String id) throws IOException;

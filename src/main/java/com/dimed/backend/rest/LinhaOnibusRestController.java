@@ -60,7 +60,7 @@ public class LinhaOnibusRestController {
     }
     @ApiOperation(value="Salva ou atualiza uma linha de onibus no database H2. Se o ID for existente, atualiza nome e código. Se não houver o ID informado, cadastra uma nova linha.")
     @RequestMapping(value = "/save", method = RequestMethod.POST, produces = "application/json")
-    public ResponseEntity<Void> saveLinhaOnibus(@RequestBody LinhaOnibus linhaOnibus) {
+    public ResponseEntity<?> saveLinhaOnibus(@RequestBody LinhaOnibus linhaOnibus) {
         Collection<LinhaOnibus> list = linhaOnibusService.findAll();
         boolean exist = false;
         for (LinhaOnibus l : list) {
@@ -69,18 +69,20 @@ public class LinhaOnibusRestController {
             }
         }
 
+        LinhaOnibus lo = new LinhaOnibus();
+
         if (exist == false) {
             if(!linhaOnibus.getNome().isEmpty() && !linhaOnibus.getCodigo().isEmpty()){
-                linhaOnibusService.save(linhaOnibus);
-                return new ResponseEntity<Void>(HttpStatus.CREATED);
+                lo = linhaOnibusService.save(linhaOnibus);
+                return new ResponseEntity<LinhaOnibus>(lo,HttpStatus.CREATED);
             }
-            return new ResponseEntity<Void>(HttpStatus.OK);
+            return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
         } else {
             if(!linhaOnibus.getNome().isEmpty() && !linhaOnibus.getCodigo().isEmpty()){
-                linhaOnibusService.save(linhaOnibus);
-                return new ResponseEntity<Void>(HttpStatus.OK);
+                lo = linhaOnibusService.save(linhaOnibus);
+                return new ResponseEntity<LinhaOnibus>(lo, HttpStatus.OK);
             }
-            return new ResponseEntity<Void>(HttpStatus.OK);
+            return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
 
         }
     }

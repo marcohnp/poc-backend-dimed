@@ -62,7 +62,7 @@ public class ItinerarioRestController {
 
     @ApiOperation(value="Salva ou atualiza um itinerario no database H2. Se o ID for existente, atualiza nome e código. Se não houver o ID informado, cadastra um novo itinerario")
     @RequestMapping(value = "/save", method = RequestMethod.POST, produces = "application/json")
-    public ResponseEntity<Void> saveItinerario(@RequestBody Itinerario itinerario) {
+    public ResponseEntity<?> saveItinerario(@RequestBody Itinerario itinerario) {
         Collection<Itinerario> list = itinerarioService.findAll();
         boolean exist = false;
         for (Itinerario l : list) {
@@ -71,18 +71,20 @@ public class ItinerarioRestController {
             }
         }
 
+        Itinerario it = new Itinerario();
+
         if (exist == false) {
             if(!itinerario.getNome().isEmpty() && !itinerario.getCodigo().isEmpty()){
-                itinerarioService.save(itinerario);
-                return new ResponseEntity<Void>(HttpStatus.CREATED);
+                it = itinerarioService.save(itinerario);
+                return new ResponseEntity<Itinerario>(it, HttpStatus.CREATED);
             }
-            return new ResponseEntity<Void>(HttpStatus.OK);
+            return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
         } else {
             if(!itinerario.getNome().isEmpty() && !itinerario.getCodigo().isEmpty()){
-                itinerarioService.save(itinerario);
-                return new ResponseEntity<Void>(HttpStatus.OK);
+                it = itinerarioService.save(itinerario);
+                return new ResponseEntity<Itinerario>(it, HttpStatus.OK);
             }
-            return new ResponseEntity<Void>(HttpStatus.OK);
+            return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
 
         }
     }

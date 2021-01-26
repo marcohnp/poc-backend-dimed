@@ -35,8 +35,8 @@ public class LinhaOnibusServiceImpl implements LinhaOnibusService {
     }
 
     @Override
-    public void save(LinhaOnibus linhaOnibus) {
-        linhaOnibusRepository.save(linhaOnibus);
+    public LinhaOnibus save(LinhaOnibus linhaOnibus) {
+        return linhaOnibusRepository.save(linhaOnibus);
     }
 
     @Override
