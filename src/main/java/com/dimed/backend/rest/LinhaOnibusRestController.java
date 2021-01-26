@@ -10,11 +10,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
-@Api(value="POC BackEnd Dimed")
+@Api(value="POC Dimed BackEnd")
 @RestController
 @CrossOrigin(exposedHeaders = "errors, content-type")
 @RequestMapping("/api/linhaonibus")
@@ -23,7 +24,7 @@ public class LinhaOnibusRestController {
     @Autowired
     private LinhaOnibusService linhaOnibusService;
 
-    @ApiOperation(value="Retorna uma lista de linhas de onibus presentes na API e salva ela no database H2.")
+    @ApiOperation(value="Retorna uma lista de linhas de onibus presentes na API PoaTransporte e a salva no database H2.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity<Collection<LinhaOnibus>> getAllLinhasOnibus() {
         Collection<LinhaOnibus> list = new ArrayList<>();
@@ -38,7 +39,7 @@ public class LinhaOnibusRestController {
 
         return new ResponseEntity<Collection<LinhaOnibus>>(list, HttpStatus.OK);
     }
-
+    @ApiOperation(value="Retorna uma linha de onibus do database H2, a partir de seu ID.")
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity<LinhaOnibus> findById(@PathVariable Long id) {
         LinhaOnibus linhaById = new LinhaOnibus();
@@ -46,7 +47,7 @@ public class LinhaOnibusRestController {
 
         return new ResponseEntity<LinhaOnibus>(linhaById, HttpStatus.OK);
     }
-
+    @ApiOperation(value="Retorna uma linha de onibus do database H2, a partir da passagem de um nome como parâmetro.")
     @RequestMapping(value = "/linha", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity<Collection<LinhaOnibus>> getListLinhaOnibusByName(@RequestParam String nome) throws IOException {
         Collection<LinhaOnibus> list = new ArrayList<>();
@@ -57,7 +58,7 @@ public class LinhaOnibusRestController {
 
         return new ResponseEntity<Collection<LinhaOnibus>>(list, HttpStatus.OK);
     }
-
+    @ApiOperation(value="Salva ou atualiza uma linha de onibus no database H2. Se o ID for existente, atualiza nome e código. Se não houver o ID informado, cadastra uma nova linha.")
     @RequestMapping(value = "/save", method = RequestMethod.POST, produces = "application/json")
     public ResponseEntity<Void> saveLinhaOnibus(@RequestBody LinhaOnibus linhaOnibus) {
         Collection<LinhaOnibus> list = linhaOnibusService.findAll();
@@ -83,12 +84,24 @@ public class LinhaOnibusRestController {
 
         }
     }
+    @ApiOperation(value="Deleta linha de onibus do database H2 a partir de seu ID.")
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "application/json")
+    @Transactional
+    public ResponseEntity<Void> deleteLinhaOnibus(@PathVariable("id") Long id){
+        LinhaOnibus linhaOnibus = this.linhaOnibusService.findById(id);
+        if(linhaOnibus == null){
+            return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
+        }
+        this.linhaOnibusService.delete(linhaOnibus);
+        return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+    }
 
+    @ApiOperation(value="Retorna as linha de onibus da API PoaTransporte a partir das coordendas passadas dentro de um raio. Parâmetros: Latitude(lat), Longitude(lng) e raio. A requisição leva em torno de 2 minutos.")
     @RequestMapping(value = "/coord", method = RequestMethod.GET, produces = "application/json")
-    public ResponseEntity<Collection<LinhaOnibus>> getListLinhaOnibusByCoord(@RequestParam double lat, @RequestParam double lng ) throws IOException, InterruptedException {
+    public ResponseEntity<Collection<LinhaOnibus>> getListLinhaOnibusByCoord(@RequestParam double lat, @RequestParam double lng, @RequestParam double raio ) throws IOException, InterruptedException {
         Collection<LinhaOnibus> list = new ArrayList<>();
 
-        linhaOnibusService.findByCoord(lat, lng);
+        list =  linhaOnibusService.findByCoord(lat, lng, raio);
 
         return new ResponseEntity<Collection<LinhaOnibus>>(list, HttpStatus.OK);
     }

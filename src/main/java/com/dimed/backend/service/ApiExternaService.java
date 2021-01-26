@@ -140,7 +140,7 @@ public class ApiExternaService {
         return list;
     }
 
-    public Collection<LinhaOnibus> linhasPorRaio(double lat, double lng) throws IOException, InterruptedException {
+    public Collection<LinhaOnibus> linhasPorRaio(double lat, double lng, double raio) throws IOException, InterruptedException {
         List<LinhaOnibus> list = createListLinhaOnibus();
         List<String> idList = new ArrayList<>();
         List<Itinerario> itinList = new ArrayList<>();
@@ -151,7 +151,6 @@ public class ApiExternaService {
         }
 
         for (int i = 0; i < idList.size(); i++) {
-            //System.out.println(idList.get(i));
             Itinerario itinerario = new Itinerario();
             itinerario  = getItinerario(getUri(idList.get(i)));
             Thread.sleep(70);
@@ -163,7 +162,7 @@ public class ApiExternaService {
             for (int i = 0; i < li.getCoordendas().size(); i++) {
                 double result = 0;
                 result = distance(lat, li.getCoordendas().get(i).getLatitude(), lng, li.getCoordendas().get(i).getLongitude(), 0.0,0.0);
-                if (result <= 500.0) {
+                if (result <= raio) {
                     LinhaOnibus linhaOnibus = new LinhaOnibus();
                     linhaOnibus.setId(li.getIdlinha());
                     linhaOnibus.setNome(li.getNome());

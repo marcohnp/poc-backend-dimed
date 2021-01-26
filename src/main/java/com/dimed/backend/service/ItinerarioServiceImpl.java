@@ -5,6 +5,7 @@ import com.dimed.backend.model.LinhaOnibus;
 import com.dimed.backend.repository.ItinerarioRepository;
 import com.dimed.backend.repository.LinhaOnibusRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -33,6 +34,11 @@ public class ItinerarioServiceImpl implements ItinerarioService {
     @Override
     public void save(Itinerario itinerario) {
         itinerarioRepository.save(itinerario);
+    }
+
+    @Override
+    public void delete(Itinerario itinerario) throws DataAccessException {
+        itinerarioRepository.delete(itinerario);
     }
 
     @Override
