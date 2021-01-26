@@ -5,6 +5,7 @@ import com.dimed.backend.model.Itinerario;
 import com.dimed.backend.model.LinhaOnibus;
 import com.dimed.backend.service.ItinerarioService;
 import com.dimed.backend.service.LinhaOnibusService;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,9 +15,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
+@Api(value="POC BackEnd Dimed")
 @RestController
 @CrossOrigin(exposedHeaders = "errors, content-type")
-@RequestMapping("/itinerario")
+@RequestMapping("/api/linhaonibus/itinerario")
 public class ItinerarioRestController {
 
     @Autowired

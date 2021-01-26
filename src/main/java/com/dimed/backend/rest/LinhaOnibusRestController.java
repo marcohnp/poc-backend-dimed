@@ -3,6 +3,8 @@ package com.dimed.backend.rest;
 import com.dimed.backend.model.Itinerario;
 import com.dimed.backend.model.LinhaOnibus;
 import com.dimed.backend.service.LinhaOnibusService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,15 +14,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
+@Api(value="POC BackEnd Dimed")
 @RestController
 @CrossOrigin(exposedHeaders = "errors, content-type")
-@RequestMapping("/linhaonibus")
+@RequestMapping("/api/linhaonibus")
 public class LinhaOnibusRestController {
 
     @Autowired
     private LinhaOnibusService linhaOnibusService;
 
-
+    @ApiOperation(value="Retorna uma lista de linhas de onibus presentes na API e salva ela no database H2.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity<Collection<LinhaOnibus>> getAllLinhasOnibus() {
         Collection<LinhaOnibus> list = new ArrayList<>();
