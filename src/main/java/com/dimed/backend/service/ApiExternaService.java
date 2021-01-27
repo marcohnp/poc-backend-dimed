@@ -172,13 +172,6 @@ public class ApiExternaService {
             }
         }
 
- //       System.out.println(listResultCoord.size());
-
-
-//        for (LinhaOnibus li1 : listResultCoord) {
-//            System.out.println(li1.getId() + " " + li1.getNome());
-//        }
-
         return listResultCoord;
     }
 
