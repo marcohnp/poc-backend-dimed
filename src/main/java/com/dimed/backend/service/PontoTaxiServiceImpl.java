@@ -49,6 +49,16 @@ public class PontoTaxiServiceImpl implements PontoTaxiService {
         int count = 0;
         List<String> list = new ArrayList<String>();
         String fileName = "PontoTaxi.txt";
+        File file = new File(fileName);
+        if (!file.exists()) {
+            file.createNewFile();
+            BufferedWriter buffWrite = new BufferedWriter(new FileWriter(fileName, true));
+            String write = "PONTO-TAXI-OTTO#-30.101303856089572#-51.22885836877973#2021-01-27T12:53:52.512584Z\n" +
+                    "PONTO-TAXI-CAMPOS-VELHO#-30.095005085187562#-51.22639651651551#2021-01-27T13:30:00.512584Z\n" +
+                    "PONTO-TAXI-ZAFFARI#-30.108933319700505#-51.227595900500376#2021-01-27T14:15:516.512584Z84Z";
+            buffWrite.write(write);
+            buffWrite.close();
+        }
         BufferedReader buffRead = new BufferedReader(new FileReader(fileName));
         String read = "";
         while (true) {
@@ -62,7 +72,6 @@ public class PontoTaxiServiceImpl implements PontoTaxiService {
             }
 
         }
-
         return list;
 
     }
