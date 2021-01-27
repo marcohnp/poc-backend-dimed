@@ -25,7 +25,7 @@ public class PontoTaxiRestController {
     @Autowired
     private PontoTaxiService pontoTaxiService;
 
-    @ApiOperation(value="Salva ou atualiza um ponto de taxi no database H2. Se o ID for existente, atualiza nome e código. Se não houver o ID informado, cadastra uma nova linha.")
+    @ApiOperation(value="Salva ou atualiza um ponto de taxi no H2 Database. Se o ID for existente, atualiza nome e código. Se não houver o ID informado, cadastra uma nova linha.")
     @RequestMapping(value = "/save", method = RequestMethod.POST, produces = "application/json")
     public ResponseEntity<?> savePontoTaxi(@RequestBody PontoTaxi pontoTaxi) {
         Collection<PontoTaxi> list = pontoTaxiService.findAll();
@@ -53,7 +53,7 @@ public class PontoTaxiRestController {
 
         }
     }
-    @ApiOperation(value="Deleta ponto de taxi do database H2 a partir de seu ID.")
+    @ApiOperation(value="Deleta ponto de taxi do H2 Database a partir de seu ID.")
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "application/json")
     @Transactional
     public ResponseEntity<Void> deletePontoTaxi(@PathVariable("id") Long id){
@@ -65,7 +65,7 @@ public class PontoTaxiRestController {
         return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
     }
 
-    @ApiOperation(value="Retorna uma lista de pontos de taxi que foram salvos no database H2.")
+    @ApiOperation(value="Retorna uma lista de pontos de taxi que foram salvos no H2 Database.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity<Collection<PontoTaxi>> getAllPontoTaxi() {
         Collection<PontoTaxi> list = new ArrayList<>();
@@ -76,7 +76,7 @@ public class PontoTaxiRestController {
 
         return new ResponseEntity<Collection<PontoTaxi>>(list, HttpStatus.OK);
     }
-    @ApiOperation(value="Retorna uma lista de pontos de taxi que foram salvos no database H2, a partir de seu ID.")
+    @ApiOperation(value="Retorna uma lista de pontos de taxi que foram salvos no H2 Database, a partir de seu ID.")
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity<PontoTaxi> findById(@PathVariable Long id) throws IOException {
         PontoTaxi pontoTaxiById = new PontoTaxi();

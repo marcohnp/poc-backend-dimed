@@ -24,7 +24,7 @@ public class LinhaOnibusRestController {
     @Autowired
     private LinhaOnibusService linhaOnibusService;
 
-    @ApiOperation(value="Retorna uma lista de linhas de onibus presentes na API PoaTransporte e a salva no database H2.")
+    @ApiOperation(value="Retorna uma lista de linhas de onibus presentes na API PoaTransporte e a salva no H2 Database.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity<Collection<LinhaOnibus>> getAllLinhasOnibus() {
         Collection<LinhaOnibus> list = new ArrayList<>();
@@ -39,7 +39,7 @@ public class LinhaOnibusRestController {
 
         return new ResponseEntity<Collection<LinhaOnibus>>(list, HttpStatus.OK);
     }
-    @ApiOperation(value="Retorna uma linha de onibus do database H2, a partir de seu ID.")
+    @ApiOperation(value="Retorna uma linha de onibus do H2 Database, a partir de seu ID.")
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity<LinhaOnibus> findById(@PathVariable Long id) {
         LinhaOnibus linhaById = new LinhaOnibus();
@@ -47,7 +47,7 @@ public class LinhaOnibusRestController {
 
         return new ResponseEntity<LinhaOnibus>(linhaById, HttpStatus.OK);
     }
-    @ApiOperation(value="Retorna uma linha de onibus do database H2, a partir da passagem de um nome como parâmetro.")
+    @ApiOperation(value="Retorna uma linha de onibus do H2 Database, a partir da passagem de um nome como parâmetro.")
     @RequestMapping(value = "/linha", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity<Collection<LinhaOnibus>> getListLinhaOnibusByName(@RequestParam String nome) throws IOException {
         Collection<LinhaOnibus> list = new ArrayList<>();
@@ -58,7 +58,7 @@ public class LinhaOnibusRestController {
 
         return new ResponseEntity<Collection<LinhaOnibus>>(list, HttpStatus.OK);
     }
-    @ApiOperation(value="Salva ou atualiza uma linha de onibus no database H2. Se o ID for existente, atualiza nome e código. Se não houver o ID informado, cadastra uma nova linha.")
+    @ApiOperation(value="Salva ou atualiza uma linha de onibus no H2 Database. Se o ID for existente, atualiza nome e código. Se não houver o ID informado, cadastra uma nova linha.")
     @RequestMapping(value = "/save", method = RequestMethod.POST, produces = "application/json")
     public ResponseEntity<?> saveLinhaOnibus(@RequestBody LinhaOnibus linhaOnibus) {
         Collection<LinhaOnibus> list = linhaOnibusService.findAll();
@@ -86,7 +86,7 @@ public class LinhaOnibusRestController {
 
         }
     }
-    @ApiOperation(value="Deleta linha de onibus do database H2 a partir de seu ID.")
+    @ApiOperation(value="Deleta linha de onibus do H2 Database a partir de seu ID.")
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "application/json")
     @Transactional
     public ResponseEntity<Void> deleteLinhaOnibus(@PathVariable("id") Long id){

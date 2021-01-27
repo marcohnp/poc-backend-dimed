@@ -26,7 +26,7 @@ public class ItinerarioRestController {
     @Autowired
     private ItinerarioService itinerarioService;
 
-    @ApiOperation(value="Retorna um itinerario da API PoaTransporte a partir de um ID informado. Também salva o itinerario no database H2.")
+    @ApiOperation(value="Retorna um itinerario da API PoaTransporte a partir de um ID informado. Também salva o itinerario no H2 Database.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity<Itinerario> getItinerario(@RequestParam String id) throws IOException {
         Itinerario itinerario = new Itinerario();
@@ -39,7 +39,7 @@ public class ItinerarioRestController {
 
         return new ResponseEntity<Itinerario>(itinerario, HttpStatus.OK);
     }
-    @ApiOperation(value="Retorna todos os itinerario salvos no database H2.")
+    @ApiOperation(value="Retorna todos os itinerario salvos no H2 Database.")
     @RequestMapping(value = "/all", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity<Collection<Itinerario>> findAll() {
         Collection<Itinerario> list = new ArrayList<>();
@@ -51,7 +51,7 @@ public class ItinerarioRestController {
         return new ResponseEntity<Collection<Itinerario>>(list, HttpStatus.OK);
     }
 
-    @ApiOperation(value="Retorna um itinerario do database H2 a partir de seu ID.")
+    @ApiOperation(value="Retorna um itinerario do H2 Database a partir de seu ID.")
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity<Itinerario> findById(@PathVariable Long id) {
         Itinerario itinerarioById = new Itinerario();
@@ -60,7 +60,7 @@ public class ItinerarioRestController {
         return new ResponseEntity<Itinerario>(itinerarioById, HttpStatus.OK);
     }
 
-    @ApiOperation(value="Salva ou atualiza um itinerario no database H2. Se o ID for existente, atualiza nome e código. Se não houver o ID informado, cadastra um novo itinerario")
+    @ApiOperation(value="Salva ou atualiza um itinerario no H2 Database. Se o ID for existente, atualiza nome e código. Se não houver o ID informado, cadastra um novo itinerario")
     @RequestMapping(value = "/save", method = RequestMethod.POST, produces = "application/json")
     public ResponseEntity<?> saveItinerario(@RequestBody Itinerario itinerario) {
         Collection<Itinerario> list = itinerarioService.findAll();
@@ -89,7 +89,7 @@ public class ItinerarioRestController {
         }
     }
 
-    @ApiOperation(value="Deleta itinerario do database H2 a partir de seu ID.")
+    @ApiOperation(value="Deleta itinerario do H2 Database a partir de seu ID.")
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "application/json")
     @Transactional
     public ResponseEntity<Void> deleteLinhaOnibus(@PathVariable("id") Long id){
