@@ -1,5 +1,10 @@
 package com.dimed.backend.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -7,6 +12,10 @@ import javax.persistence.Id;
 import java.io.Serializable;
 import java.util.Objects;
 
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 public class LinhaOnibus implements Serializable {
 
@@ -15,38 +24,6 @@ public class LinhaOnibus implements Serializable {
     private String codigo;
     private String nome;
 
-    public LinhaOnibus(){
-    }
-
-    public LinhaOnibus(Long id, String codigo, String nome) {
-        this.id = id;
-        this.codigo = codigo;
-        this.nome = nome;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getCodigo() {
-        return codigo;
-    }
-
-    public void setCodigo(String codigo) {
-        this.codigo = codigo;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
 
     @Override
     public boolean equals(Object o) {

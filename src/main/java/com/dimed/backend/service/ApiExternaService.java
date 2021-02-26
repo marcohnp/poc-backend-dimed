@@ -19,6 +19,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -43,7 +45,8 @@ public class ApiExternaService {
         converter.setSupportedMediaTypes(Collections.singletonList(MediaType.TEXT_HTML));
         rest.getMessageConverters().add(converter);
 
-        ResponseEntity<List<LinhaOnibusDTO>> response = rest.exchange(uri.toUriString(), HttpMethod.GET,null, new ParameterizedTypeReference<List<LinhaOnibusDTO>>() {});
+        ResponseEntity<List<LinhaOnibusDTO>> response = rest.exchange(uri.toUriString(), HttpMethod.GET, null, new ParameterizedTypeReference<List<LinhaOnibusDTO>>() {
+        });
 
         List<LinhaOnibusDTO> dto = response.getBody();
 
@@ -52,19 +55,17 @@ public class ApiExternaService {
     }
 
     public List<LinhaOnibus> createListLinhaOnibus() {
-        List<LinhaOnibusDTO> listDTO = chamarApiExterna();
-        List<LinhaOnibus> list = new ArrayList<>();
-
-        for (LinhaOnibusDTO dto: listDTO){
-            LinhaOnibus onibus = new LinhaOnibus();
-            onibus.setId(Long.parseLong(dto.getId()));
-            onibus.setNome(dto.getNome());
-            onibus.setCodigo(dto.getCodigo());
-            list.add(onibus);
-        }
-
-        return list;
+        return chamarApiExterna().stream()
+                .map(dto ->
+                        LinhaOnibus
+                                .builder()
+                                .id(Long.parseLong(dto.getId()))
+                                .nome(dto.getNome())
+                                .codigo(dto.getCodigo())
+                                .build())
+                .collect(Collectors.toList());
     }
+
 
     public UriComponents getUri(String id) {
         UriComponents uriExterna = UriComponentsBuilder.newInstance()
@@ -72,7 +73,7 @@ public class ApiExternaService {
                 .host("www.poatransporte.com.br")
                 .path("php/facades/process.php")
                 .queryParam("a", "il")
-                .queryParam("p", ""+id+"")
+                .queryParam("p", "" + id + "")
                 .build();
 
         return uriExterna;
@@ -85,7 +86,7 @@ public class ApiExternaService {
         converter.setSupportedMediaTypes(Collections.singletonList(MediaType.TEXT_HTML));
         rest2.getMessageConverters().add(converter);
 
-        ResponseEntity<String> response2 = rest2.exchange(uri.toUriString(), HttpMethod.GET,null, String.class);
+        ResponseEntity<String> response2 = rest2.exchange(uri.toUriString(), HttpMethod.GET, null, String.class);
 
         String string = response2.getBody();
 
@@ -104,8 +105,8 @@ public class ApiExternaService {
 
         for (int i = 0; i < (actualObj.size() - 3); i++) {
             Coordendas coord = new Coordendas();
-            JsonNode lat = actualObj.get(""+i+"").path("lat");
-            JsonNode lng = actualObj.get(""+i+"").path("lng");
+            JsonNode lat = actualObj.get("" + i + "").path("lat");
+            JsonNode lng = actualObj.get("" + i + "").path("lng");
             double latitude = lat.asDouble();
             double longitude = lng.asDouble();
             coord.setLatitude(latitude);
@@ -127,8 +128,8 @@ public class ApiExternaService {
         List<LinhaOnibusDTO> listDTO = chamarApiExterna();
         List<LinhaOnibus> list = new ArrayList<>();
 
-        for (LinhaOnibusDTO dto: listDTO){
-            if(dto.getNome().contains(name.toUpperCase())) {
+        for (LinhaOnibusDTO dto : listDTO) {
+            if (dto.getNome().contains(name.toUpperCase())) {
                 LinhaOnibus onibus = new LinhaOnibus();
                 onibus.setId(Long.parseLong(dto.getId()));
                 onibus.setNome(dto.getNome());
@@ -152,7 +153,7 @@ public class ApiExternaService {
 
         for (int i = 0; i < idList.size(); i++) {
             Itinerario itinerario = new Itinerario();
-            itinerario  = getItinerario(getUri(idList.get(i)));
+            itinerario = getItinerario(getUri(idList.get(i)));
             Thread.sleep(70);
             itinList.add(itinerario);
 
@@ -161,7 +162,7 @@ public class ApiExternaService {
         for (Itinerario li : itinList) {
             for (int i = 0; i < li.getCoordendas().size(); i++) {
                 double result = 0;
-                result = distance(lat, li.getCoordendas().get(i).getLatitude(), lng, li.getCoordendas().get(i).getLongitude(), 0.0,0.0);
+                result = distance(lat, li.getCoordendas().get(i).getLatitude(), lng, li.getCoordendas().get(i).getLongitude(), 0.0, 0.0);
                 if (result <= raio) {
                     LinhaOnibus linhaOnibus = new LinhaOnibus();
                     linhaOnibus.setId(li.getIdlinha());
