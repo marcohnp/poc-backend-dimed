@@ -1,6 +1,8 @@
 package com.dimed.backend.service;
 
 import com.dimed.backend.dto.LinhaOnibusDTO;
+import com.dimed.backend.integration.ItinerarioIntegration;
+import com.dimed.backend.integration.LinhaOnibusIntegration;
 import com.dimed.backend.model.Coordendas;
 import com.dimed.backend.model.Itinerario;
 import com.dimed.backend.model.LinhaOnibus;
@@ -26,26 +28,23 @@ import java.util.stream.Collectors;
 @Service
 public class ApiExternaService {
 
-    private static JsonNode jsonNode;
+    private LinhaOnibusIntegration linhaOnibusIntegration;
+    private ItinerarioIntegration itinerarioIntegration;
 
-    UriComponents uri = UriComponentsBuilder.newInstance()
-            .scheme("http")
-            .host("www.poatransporte.com.br")
-            .path("php/facades/process.php")
-            .queryParam("a", "nc")
-            .queryParam("p", "%")
-            .queryParam("t", "o")
-            .build();
-
-
-    public List<LinhaOnibusDTO> chamarApiExterna() {
-
+    private RestTemplate getRestTemplate() {
         RestTemplate rest = new RestTemplate();
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
         converter.setSupportedMediaTypes(Collections.singletonList(MediaType.TEXT_HTML));
         rest.getMessageConverters().add(converter);
+        return rest;
+    }
 
-        ResponseEntity<List<LinhaOnibusDTO>> response = rest.exchange(uri.toUriString(), HttpMethod.GET, null, new ParameterizedTypeReference<List<LinhaOnibusDTO>>() {
+    public List<LinhaOnibusDTO> chamarApiExterna() {
+
+        RestTemplate rest = getRestTemplate();
+
+        ResponseEntity<List<LinhaOnibusDTO>> response = rest.exchange(linhaOnibusIntegration.catchUriLinhaOnibus(),
+                HttpMethod.GET, null, new ParameterizedTypeReference<List<LinhaOnibusDTO>>() {
         });
 
         List<LinhaOnibusDTO> dto = response.getBody();
@@ -66,27 +65,11 @@ public class ApiExternaService {
                 .collect(Collectors.toList());
     }
 
+    public Itinerario getItinerario(String uri) throws JsonParseException, IOException {
 
-    public UriComponents getUri(String id) {
-        UriComponents uriExterna = UriComponentsBuilder.newInstance()
-                .scheme("http")
-                .host("www.poatransporte.com.br")
-                .path("php/facades/process.php")
-                .queryParam("a", "il")
-                .queryParam("p", "" + id + "")
-                .build();
+        RestTemplate rest2 = getRestTemplate();
 
-        return uriExterna;
-    }
-
-    public Itinerario getItinerario(UriComponents uri) throws JsonParseException, IOException {
-
-        RestTemplate rest2 = new RestTemplate();
-        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-        converter.setSupportedMediaTypes(Collections.singletonList(MediaType.TEXT_HTML));
-        rest2.getMessageConverters().add(converter);
-
-        ResponseEntity<String> response2 = rest2.exchange(uri.toUriString(), HttpMethod.GET, null, String.class);
+        ResponseEntity<String> response2 = rest2.exchange(uri, HttpMethod.GET, null, String.class);
 
         String string = response2.getBody();
 
@@ -101,7 +84,7 @@ public class ApiExternaService {
         String nome = jnNome.asText();
         String codigo = jnCodigo.asText();
 
-        List<Coordendas> listCoord = new ArrayList<Coordendas>();
+        List<Coordendas> listCoord = new ArrayList<>();
 
         for (int i = 0; i < (actualObj.size() - 3); i++) {
             Coordendas coord = new Coordendas();
@@ -118,9 +101,7 @@ public class ApiExternaService {
             listCoord.add(coord);
         }
 
-        Itinerario itinerario = new Itinerario(idLinha, nome, codigo, listCoord);
-
-        return itinerario;
+        return  new Itinerario(idLinha, nome, codigo, listCoord);
 
     }
 
@@ -153,7 +134,7 @@ public class ApiExternaService {
 
         for (int i = 0; i < idList.size(); i++) {
             Itinerario itinerario = new Itinerario();
-            itinerario = getItinerario(getUri(idList.get(i)));
+            itinerario = getItinerario(itinerarioIntegration.catchUriItinerario(idList.get(i)));
             Thread.sleep(70);
             itinList.add(itinerario);
 

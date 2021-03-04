@@ -1,5 +1,6 @@
 package com.dimed.backend.service;
 
+import com.dimed.backend.integration.ItinerarioIntegration;
 import com.dimed.backend.model.Itinerario;
 import com.dimed.backend.model.LinhaOnibus;
 import com.dimed.backend.repository.ItinerarioRepository;
@@ -17,6 +18,8 @@ public class ItinerarioServiceImpl implements ItinerarioService {
 
 
     private ItinerarioRepository itinerarioRepository;
+
+    private ItinerarioIntegration itinerarioIntegration;
 
     @Autowired
     private ApiExternaService serviceAPI;
@@ -43,14 +46,12 @@ public class ItinerarioServiceImpl implements ItinerarioService {
 
     @Override
     public Itinerario findById(Long id) {
-
         return itinerarioRepository.findById(id);
     }
 
     @Override
     public Itinerario findItinerario(String id) throws IOException {
-        Itinerario itinerario = serviceAPI.getItinerario(serviceAPI.getUri(id));
-        return itinerario;
+        return serviceAPI.getItinerario(itinerarioIntegration.catchUriItinerario(id));
     }
 
 
