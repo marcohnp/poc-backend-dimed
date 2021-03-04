@@ -8,6 +8,7 @@ import com.dimed.backend.model.Itinerario;
 import com.dimed.backend.model.LinhaOnibus;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AllArgsConstructor;
 import org.springframework.boot.json.JsonParseException;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
@@ -16,20 +17,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponents;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
-
+@AllArgsConstructor
 @Service
 public class ApiExternaService {
 
-    private LinhaOnibusIntegration linhaOnibusIntegration;
-    private ItinerarioIntegration itinerarioIntegration;
+    private final LinhaOnibusIntegration linhaOnibusIntegration;
+    private final ItinerarioIntegration itinerarioIntegration;
 
     private RestTemplate getRestTemplate() {
         RestTemplate rest = new RestTemplate();
@@ -39,22 +37,16 @@ public class ApiExternaService {
         return rest;
     }
 
-    public List<LinhaOnibusDTO> chamarApiExterna() {
-
+    public List<LinhaOnibusDTO> getResponseLinhaOnibus() {
         RestTemplate rest = getRestTemplate();
-
         ResponseEntity<List<LinhaOnibusDTO>> response = rest.exchange(linhaOnibusIntegration.catchUriLinhaOnibus(),
                 HttpMethod.GET, null, new ParameterizedTypeReference<List<LinhaOnibusDTO>>() {
         });
-
-        List<LinhaOnibusDTO> dto = response.getBody();
-
-        return dto;
-
+        return response.getBody();
     }
 
     public List<LinhaOnibus> createListLinhaOnibus() {
-        return chamarApiExterna().stream()
+        return getResponseLinhaOnibus().stream()
                 .map(dto ->
                         LinhaOnibus
                                 .builder()
@@ -67,11 +59,7 @@ public class ApiExternaService {
 
     public Itinerario getItinerario(String uri) throws JsonParseException, IOException {
 
-        RestTemplate rest2 = getRestTemplate();
-
-        ResponseEntity<String> response2 = rest2.exchange(uri, HttpMethod.GET, null, String.class);
-
-        String string = response2.getBody();
+        String string = getReponseItinerario(uri);
 
         ObjectMapper mapper = new ObjectMapper();
         JsonNode actualObj = mapper.readTree(string);
@@ -105,21 +93,21 @@ public class ApiExternaService {
 
     }
 
+    private String getReponseItinerario(String uri) {
+        RestTemplate rest = getRestTemplate();
+        ResponseEntity<String> response = rest.exchange(uri, HttpMethod.GET, null, String.class);
+        return  response.getBody();
+    }
+
     public List<LinhaOnibus> getListLinhaOnibusByName(String name) {
-        List<LinhaOnibusDTO> listDTO = chamarApiExterna();
-        List<LinhaOnibus> list = new ArrayList<>();
-
-        for (LinhaOnibusDTO dto : listDTO) {
-            if (dto.getNome().contains(name.toUpperCase())) {
-                LinhaOnibus onibus = new LinhaOnibus();
-                onibus.setId(Long.parseLong(dto.getId()));
-                onibus.setNome(dto.getNome());
-                onibus.setCodigo(dto.getCodigo());
-                list.add(onibus);
-            }
-        }
-
-        return list;
+        return getResponseLinhaOnibus().stream()
+                .map(dto -> LinhaOnibus
+                        .builder()
+                        .id(Long.parseLong(dto.getId()))
+                        .nome(dto.getNome())
+                        .codigo(dto.getCodigo())
+                        .build())
+                .collect(Collectors.toList());
     }
 
     public Collection<LinhaOnibus> linhasPorRaio(double lat, double lng, double raio) throws IOException, InterruptedException {
