@@ -9,6 +9,7 @@ import com.dimed.backend.model.LinhaOnibus;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.JsonParseException;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
