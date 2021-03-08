@@ -9,7 +9,6 @@ import com.dimed.backend.model.LinhaOnibus;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.JsonParseException;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
@@ -19,7 +18,6 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -27,20 +25,9 @@ import java.util.stream.Collectors;
 @Service
 public class ApiExternaService {
 
-    private final LinhaOnibusIntegration linhaOnibusIntegration;
-    private final ItinerarioIntegration itinerarioIntegration;
-
-    private RestTemplate getRestTemplate() {
-        RestTemplate rest = new RestTemplate();
-        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-        converter.setSupportedMediaTypes(Collections.singletonList(MediaType.TEXT_HTML));
-        rest.getMessageConverters().add(converter);
-        return rest;
-    }
-
     public List<LinhaOnibusDTO> getResponseLinhaOnibus() {
         RestTemplate rest = getRestTemplate();
-        ResponseEntity<List<LinhaOnibusDTO>> response = rest.exchange(linhaOnibusIntegration.catchUriLinhaOnibus(),
+        ResponseEntity<List<LinhaOnibusDTO>> response = rest.exchange(LinhaOnibusIntegration.catchUriLinhaOnibus(),
                 HttpMethod.GET, null, new ParameterizedTypeReference<List<LinhaOnibusDTO>>() {
         });
         return response.getBody();
@@ -58,20 +45,54 @@ public class ApiExternaService {
                 .collect(Collectors.toList());
     }
 
-    public Itinerario getItinerario(String uri) throws JsonParseException, IOException {
+    public List<LinhaOnibus> getListLinhaOnibusByName(String name) {
+        return getResponseLinhaOnibus().stream()
+                .map(dto -> LinhaOnibus
+                        .builder()
+                        .id(Long.parseLong(dto.getId()))
+                        .nome(dto.getNome())
+                        .codigo(dto.getCodigo())
+                        .build())
+                        .filter(linhaOnibus -> linhaOnibus.getNome().contains(name.toUpperCase()))
+                .collect(Collectors.toList());
+    }
 
-        String string = getReponseItinerario(uri);
 
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode actualObj = mapper.readTree(string);
+    private String getReponseItinerario(String uri) {
+        RestTemplate rest = getRestTemplate();
+        ResponseEntity<String> response = rest.exchange(uri, HttpMethod.GET, null, String.class);
+        return  response.getBody();
+    }
 
-        JsonNode jnIdLinha = actualObj.get("idlinha");
-        JsonNode jnNome = actualObj.get("nome");
-        JsonNode jnCodigo = actualObj.get("codigo");
+    private RestTemplate getRestTemplate() {
+        RestTemplate rest = new RestTemplate();
+        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+        converter.setSupportedMediaTypes(Collections.singletonList(MediaType.TEXT_HTML));
+        rest.getMessageConverters().add(converter);
+        return rest;
+    }
 
-        Long idLinha = jnIdLinha.asLong();
-        String nome = jnNome.asText();
-        String codigo = jnCodigo.asText();
+    public Itinerario populateItinerario(String uri) {
+        try {
+            JsonNode actualObj = getJsonNode(uri);
+            JsonNode jnIdLinha = actualObj.get("idlinha");
+            JsonNode jnNome = actualObj.get("nome");
+            JsonNode jnCodigo = actualObj.get("codigo");
+
+            Long idLinha = jnIdLinha.asLong();
+            String nome = jnNome.asText();
+            String codigo = jnCodigo.asText();
+
+            return new Itinerario(idLinha, nome, codigo, null);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    public Itinerario getItinerario(String uri)  {
+        JsonNode actualObj = getJsonNode(uri);
+        Itinerario itinerario = populateItinerario(uri);
 
         List<Coordendas> listCoord = new ArrayList<>();
 
@@ -84,66 +105,46 @@ public class ApiExternaService {
             coord.setLatitude(latitude);
             coord.setLongitude(longitude);
             Itinerario it = new Itinerario();
-            it.setIdlinha(idLinha);
+            it.setIdlinha(itinerario.getIdlinha());
             coord.setItinerario(it);
-
             listCoord.add(coord);
         }
+        itinerario.setCoordendas(listCoord);
+        return  itinerario;
+    }
 
-        return  new Itinerario(idLinha, nome, codigo, listCoord);
+    private JsonNode getJsonNode(String uri) {
+        try {
+            String string = getReponseItinerario(uri);
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.readTree(string);
+        } catch (Exception e) {
+            throw new JsonParseException(e);
+        }
 
     }
 
-    private String getReponseItinerario(String uri) {
-        RestTemplate rest = getRestTemplate();
-        ResponseEntity<String> response = rest.exchange(uri, HttpMethod.GET, null, String.class);
-        return  response.getBody();
+    public Collection<LinhaOnibus> linhasPorRaio(double lat, double lng, double raio) {
+        List<LinhaOnibus> linhas = createListLinhaOnibus();
+
+       return  linhas.stream().filter(linha -> {
+            Itinerario itinerario = getItinerario(ItinerarioIntegration.catchUriItinerario(linha.getId().toString()));
+            setThread();
+            return itinerario.getCoordendas().stream().anyMatch(coordenadas -> {
+                double result = distance(lat, coordenadas.getLatitude(),
+                        lng,coordenadas.getLongitude(), 0.0, 0.0);
+                return result <= raio;
+            });
+        }).collect(Collectors.toList());
     }
 
-    public List<LinhaOnibus> getListLinhaOnibusByName(String name) {
-        return getResponseLinhaOnibus().stream()
-                .map(dto -> LinhaOnibus
-                        .builder()
-                        .id(Long.parseLong(dto.getId()))
-                        .nome(dto.getNome())
-                        .codigo(dto.getCodigo())
-                        .build())
-                .collect(Collectors.toList());
-    }
-
-    public Collection<LinhaOnibus> linhasPorRaio(double lat, double lng, double raio) throws IOException, InterruptedException {
-        List<LinhaOnibus> list = createListLinhaOnibus();
-        List<String> idList = new ArrayList<>();
-        List<Itinerario> itinList = new ArrayList<>();
-        Set<LinhaOnibus> listResultCoord = new HashSet<LinhaOnibus>();
-
-        for (LinhaOnibus l : list) {
-            idList.add(l.getId().toString());
-        }
-
-        for (int i = 0; i < idList.size(); i++) {
-            Itinerario itinerario = new Itinerario();
-            itinerario = getItinerario(itinerarioIntegration.catchUriItinerario(idList.get(i)));
-            Thread.sleep(70);
-            itinList.add(itinerario);
-
-        }
-
-        for (Itinerario li : itinList) {
-            for (int i = 0; i < li.getCoordendas().size(); i++) {
-                double result = 0;
-                result = distance(lat, li.getCoordendas().get(i).getLatitude(), lng, li.getCoordendas().get(i).getLongitude(), 0.0, 0.0);
-                if (result <= raio) {
-                    LinhaOnibus linhaOnibus = new LinhaOnibus();
-                    linhaOnibus.setId(li.getIdlinha());
-                    linhaOnibus.setNome(li.getNome());
-                    linhaOnibus.setCodigo(li.getCodigo());
-                    listResultCoord.add(linhaOnibus);
-                }
-            }
-        }
-
-        return listResultCoord;
+    private void setThread() {
+       try {
+           Thread.sleep(130);
+        } catch (InterruptedException e) {
+           Thread.currentThread().interrupt();
+           throw new RuntimeException(e);
+       }
     }
 
     public static double distance(double lat1, double lat2, double lon1,

@@ -13,7 +13,7 @@ import java.util.List;
 @Service
 public class LinhaOnibusServiceImpl implements LinhaOnibusService {
 
-    private LinhaOnibusRepository linhaOnibusRepository;
+    private final LinhaOnibusRepository linhaOnibusRepository;
 
     @Autowired
     private ApiExternaService serviceAPI;
@@ -25,8 +25,7 @@ public class LinhaOnibusServiceImpl implements LinhaOnibusService {
 
     @Override
     public Collection<LinhaOnibus> findAll() {
-        List<LinhaOnibus> list = serviceAPI.createListLinhaOnibus();
-        return list;
+        return serviceAPI.createListLinhaOnibus();
     }
 
     @Override
@@ -46,14 +45,13 @@ public class LinhaOnibusServiceImpl implements LinhaOnibusService {
 
     @Override
     public Collection<LinhaOnibus> findByName(String name) {
-        Collection<LinhaOnibus> list = serviceAPI.getListLinhaOnibusByName(name);
-        return list;
+        return serviceAPI.getListLinhaOnibusByName(name);
     }
 
     @Override
-    public Collection<LinhaOnibus> findByCoord(double lat, double lng, double raio) throws IOException, InterruptedException {
-        Collection<LinhaOnibus> list = serviceAPI.linhasPorRaio(lat, lng, raio);
-        return list;
+    public Collection<LinhaOnibus> findByCoord(double lat, double lng, double raio)
+            throws IOException, InterruptedException {
+        return serviceAPI.linhasPorRaio(lat, lng, raio);
     }
 
 }

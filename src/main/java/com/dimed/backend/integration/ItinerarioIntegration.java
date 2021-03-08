@@ -1,13 +1,14 @@
 package com.dimed.backend.integration;
 
-import org.springframework.stereotype.Component;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.springframework.web.util.UriComponentsBuilder;
 
 
-@Component
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ItinerarioIntegration {
 
-    public String catchUriItinerario(String id) {
+    public static String catchUriItinerario(String id) {
         return UriComponentsBuilder.newInstance()
                 .scheme("http")
                 .host("www.poatransporte.com.br")

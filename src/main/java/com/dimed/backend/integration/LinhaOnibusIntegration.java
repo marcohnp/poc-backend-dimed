@@ -1,12 +1,13 @@
 package com.dimed.backend.integration;
 
-import org.springframework.stereotype.Component;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.springframework.web.util.UriComponentsBuilder;
 
-@Component
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class LinhaOnibusIntegration {
 
-    public String catchUriLinhaOnibus() {
+    public static String catchUriLinhaOnibus() {
 
         return UriComponentsBuilder.newInstance()
                 .scheme("http")
