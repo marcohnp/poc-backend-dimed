@@ -18,7 +18,10 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
@@ -72,6 +75,17 @@ public class ApiExternaService {
         return rest;
     }
 
+    private JsonNode getJsonNode(String uri) {
+        try {
+            String string = getReponseItinerario(uri);
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.readTree(string);
+        } catch (Exception e) {
+            throw new JsonParseException(e);
+        }
+
+    }
+
     public Itinerario populateItinerario(String uri) {
         try {
             JsonNode actualObj = getJsonNode(uri);
@@ -85,10 +99,9 @@ public class ApiExternaService {
 
             return new Itinerario(idLinha, nome, codigo, null);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new JsonParseException(e);
         }
     }
-
 
     public Itinerario getItinerario(String uri)  {
         JsonNode actualObj = getJsonNode(uri);
@@ -113,17 +126,6 @@ public class ApiExternaService {
         return  itinerario;
     }
 
-    private JsonNode getJsonNode(String uri) {
-        try {
-            String string = getReponseItinerario(uri);
-            ObjectMapper mapper = new ObjectMapper();
-            return mapper.readTree(string);
-        } catch (Exception e) {
-            throw new JsonParseException(e);
-        }
-
-    }
-
     public Collection<LinhaOnibus> linhasPorRaio(double lat, double lng, double raio) {
         List<LinhaOnibus> linhas = createListLinhaOnibus();
 
@@ -140,7 +142,7 @@ public class ApiExternaService {
 
     private void setThread() {
        try {
-           Thread.sleep(130);
+           Thread.sleep(109);
         } catch (InterruptedException e) {
            Thread.currentThread().interrupt();
            throw new RuntimeException(e);

@@ -2,17 +2,13 @@ package com.dimed.backend.service;
 
 import com.dimed.backend.integration.ItinerarioIntegration;
 import com.dimed.backend.model.Itinerario;
-import com.dimed.backend.model.LinhaOnibus;
 import com.dimed.backend.repository.ItinerarioRepository;
-import com.dimed.backend.repository.LinhaOnibusRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.Collection;
-import java.util.List;
 
 @AllArgsConstructor
 @Service
@@ -50,7 +46,7 @@ public class ItinerarioServiceImpl implements ItinerarioService {
     }
 
     @Override
-    public Itinerario findItinerario(String id) throws IOException {
+    public Itinerario findItinerario(String id) {
         return serviceAPI.getItinerario(ItinerarioIntegration.catchUriItinerario(id));
     }
 

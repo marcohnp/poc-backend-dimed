@@ -6,9 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.Collection;
-import java.util.List;
 
 @Service
 public class LinhaOnibusServiceImpl implements LinhaOnibusService {
@@ -49,8 +47,7 @@ public class LinhaOnibusServiceImpl implements LinhaOnibusService {
     }
 
     @Override
-    public Collection<LinhaOnibus> findByCoord(double lat, double lng, double raio)
-            throws IOException, InterruptedException {
+    public Collection<LinhaOnibus> findByCoord(double lat, double lng, double raio) {
         return serviceAPI.linhasPorRaio(lat, lng, raio);
     }
 
