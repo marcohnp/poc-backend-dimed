@@ -1,8 +1,6 @@
 package com.dimed.backend.rest;
 
-import com.dimed.backend.model.LinhaOnibus;
 import com.dimed.backend.model.PontoTaxi;
-import com.dimed.backend.service.LinhaOnibusService;
 import com.dimed.backend.service.PontoTaxiService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

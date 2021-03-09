@@ -1,10 +1,7 @@
 package com.dimed.backend.rest;
 
-import com.dimed.backend.model.Coordendas;
 import com.dimed.backend.model.Itinerario;
-import com.dimed.backend.model.LinhaOnibus;
 import com.dimed.backend.service.ItinerarioService;
-import com.dimed.backend.service.LinhaOnibusService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
