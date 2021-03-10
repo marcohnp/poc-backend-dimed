@@ -126,7 +126,7 @@ public class ApiExternaService {
         return  itinerario;
     }
 
-    public Collection<LinhaOnibus> linhasPorRaio(double lat, double lng, double raio) {
+    public List<LinhaOnibus> linhasPorRaio(double lat, double lng, double raio) {
         List<LinhaOnibus> linhas = createListLinhaOnibus();
 
        return  linhas.stream().filter(linha -> {

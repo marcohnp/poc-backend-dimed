@@ -5,7 +5,6 @@ import com.dimed.backend.service.LinhaOnibusService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.Collection;
 import java.util.List;
 
 @Component
@@ -26,7 +25,13 @@ public class LinhaOnibusFacade {
         return linhaOnibusService.findByName(name);
     }
 
-    public LinhaOnibus save(LinhaOnibus linha) {
-        return linhaOnibusService.save(linha);
+    public List<LinhaOnibus> findByCoordinates(double lat, double lng, double radius){
+        return linhaOnibusService.findByCoordinates(lat, lng, radius);
     }
+
+    public void save(LinhaOnibus linhaOnibus) { linhaOnibusService.validateSave(linhaOnibus); }
+
+    public void update(LinhaOnibus linhaOnibus) { linhaOnibusService.validateUpdate(linhaOnibus); }
+
+    public void delete(Long id) { linhaOnibusService.delete(id); }
 }

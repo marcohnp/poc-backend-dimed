@@ -2,9 +2,9 @@ package com.dimed.backend.exception.exceptions;
 
 import org.springframework.http.HttpStatus;
 
-public class LinhasOnibusNotFound extends RuntimeException {
+public class LinhasOnibusNotFoundException extends RuntimeException {
 
-    public LinhasOnibusNotFound(){
+    public LinhasOnibusNotFoundException(){
         super("Linhas de Onibus não encontradas.");
     }
 }

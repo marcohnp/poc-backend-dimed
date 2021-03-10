@@ -1,16 +1,18 @@
 package com.dimed.backend.model;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Objects;
+
 
 @Data
 @Builder
@@ -20,8 +22,11 @@ import java.util.Objects;
 public class LinhaOnibus implements Serializable {
 
     @Id
+    @NotNull(message = "Id cannot be null")
     private Long id;
+    @NotEmpty(message = "Codigo cannot be empty")
     private String codigo;
+    @NotEmpty(message = "Nome cannot be empty")
     private String nome;
 
 
